@@ -20,6 +20,13 @@ var cells=[];
 var palColors=["#001219","#005f73","#0a9396","#94d2bd","#e9d8a6","#ee9b00","#ca6702","#bb3e03","#ae2012","#9b2226"];
 
 
+
+setupMidi(midiStarted);
+
+function midiStarted() {
+
+}
+
 //Melody
 let ml = new Tone.Loop(melodyLoop, "4n");
 
@@ -71,8 +78,6 @@ function setup() {
       blackkeys.push(24+j*12+notmajor[i]);
     }
   }
-  console.log(whitekeys);
-  console.log(blackkeys);  
 }
 
 
@@ -86,7 +91,6 @@ function drawPiano(selectedNotes) {
     } else {
       fill(255);
     }
-    console.log(whitekeys[ip]);
     rect(pianoX+(ip*18),pianoY,18,150);
   }
 
