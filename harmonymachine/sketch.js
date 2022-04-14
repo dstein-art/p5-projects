@@ -41,6 +41,22 @@ function midiStarted() {
 }
 
 var notesDown=[];
+var aNotesDown=[];
+
+function  getNoteInScale(m) {
+  var noteInScale=-1;
+  let temp=m%12;
+  let rtemp=root%12;
+  if (temp<rtemp) {
+    temp=(temp+12)-rtemp;
+  } else {
+    temp=temp-rtemp;
+  }
+  noteInScale=selectedScale.indexOf(temp);
+  console.log("Root=",root,"NOTE In SCALE=",noteInScale);
+  return noteInScale;
+}
+
 function notePressed(m) {
   notesDown.push(m);
   let aNote=Utilities.buildNote(m);
@@ -74,6 +90,7 @@ let myScale = major; // try minor and other modes
 // Start
 function mouseClicked() {
   if (!soundOn) {
+    Tone.start();
     Tone.Transport.start();
     soundOn=true;
   }
@@ -81,7 +98,7 @@ function mouseClicked() {
   if ((mouseX > gridx) && (mouseY>gridy) && (mouseX < (gridx+cellsWide*cellsize)) && (mouseY < (gridy + cellsHigh*cellsize))) {
     let cellX = floor((mouseX - gridx)/cellsize);
     let cellY = floor((mouseY - gridy)/cellsize);
-    cells[cellX][cellY]=!cells[cellX][cellY];
+    cells[cellX][cellY]=(cells[cellX][cellY]+1)%3;
   }
 
 }
@@ -96,7 +113,7 @@ var octaveSelect;
 
 const loopA = new Tone.Loop(runRhythm, "4n").start();
 
-var drums=[36,40,39,42];
+var drums=[36,44,38,39,40,50,42,46];
 function runRhythm(time) {
   let currentBeat=totalBeats % 8;
   let accBeat=totalBeats % accompanyBeats;
@@ -116,20 +133,36 @@ function runRhythm(time) {
   } 
   dtstr="+"+String(dt);
 
-  if (cells[currentBeat][0]>0) {
+  if (cells[currentBeat][0]==1) {
     let aNote=Utilities.buildNote(drums[0]);
     channel10.playNote(aNote,{time: dtstr});
   }
-  if (cells[currentBeat][1]>0) {
+  if (cells[currentBeat][0]==2) {
     let aNote=Utilities.buildNote(drums[1]);
     channel10.playNote(aNote,{time: dtstr});
   }
-  if (cells[currentBeat][2]>0) {
+  if (cells[currentBeat][1]==1) {
     let aNote=Utilities.buildNote(drums[2]);
     channel10.playNote(aNote,{time: dtstr});
   }
-  if (cells[currentBeat][3]>0) {
+  if (cells[currentBeat][1]==2) {
     let aNote=Utilities.buildNote(drums[3]);
+    channel10.playNote(aNote,{time: dtstr});
+  }
+  if (cells[currentBeat][2]==1) {
+    let aNote=Utilities.buildNote(drums[4]);
+    channel10.playNote(aNote,{time: dtstr});
+  }
+  if (cells[currentBeat][2]==2) {
+    let aNote=Utilities.buildNote(drums[5]);
+    channel10.playNote(aNote,{time: dtstr});
+  }
+  if (cells[currentBeat][3]==1) {
+    let aNote=Utilities.buildNote(drums[6]);
+    channel10.playNote(aNote,{time: dtstr});
+  }
+  if (cells[currentBeat][3]==2) {
+    let aNote=Utilities.buildNote(drums[7]);
     channel10.playNote(aNote,{time: dtstr});
   }
   totalBeats++;
@@ -149,8 +182,24 @@ function playAccompany(dur) {
   }
   if (lowNote != 200) {
     console.log("Accompany "+String(lowNote)+" dur="+String(dur*millisPerBeat));
-    let aNote=Utilities.buildNote(lowNote)
-    channel2.playNote(aNote,{duration: dur*millisPerBeat})
+    let nIndex=getNoteInScale(lowNote);
+    aNotesDown=[];
+    if (nIndex != -1) {
+      console.log(lowNote);
+      console.log(nIndex);
+      console.log(root);
+      console.log(selectedScale);
+      console.log("NOTE TO BUILD:",(root+selectedScale[nIndex]));
+      let aNote=Utilities.buildNote(root+selectedScale[nIndex]);
+      aNotesDown.push(root+selectedScale[nIndex]);
+      channel2.playNote(aNote,{duration: dur*millisPerBeat-100});
+      aNote=Utilities.buildNote(root+selectedScale[(nIndex+2)%7]);
+      aNotesDown.push(root+selectedScale[(nIndex+2)%7]);
+      channel2.playNote(aNote,{duration: dur*millisPerBeat-100});
+      aNote=Utilities.buildNote(root+selectedScale[(nIndex+4)%7]);
+      aNotesDown.push(root+selectedScale[(nIndex+4)%7]);
+      channel2.playNote(aNote,{duration: dur*millisPerBeat-100})
+    }
   }
   lastNote=lowNote;
 }
@@ -194,6 +243,7 @@ function setup() {
   keySelect.option('F Minor');
   keySelect.selected('C Major');
   keySelect.changed(keyChanged);
+  keyChanged();
 
   text('Accompaniment Rhythm (i.e. 4 4 2 2)', 100, 160);
   accompanyInput = createInput();
@@ -231,6 +281,54 @@ function keyChanged() {
       root=octave*12;
       selectedScale=minor;
       break;
+    case "D Major":
+      root=2+octave*12;
+      selectedScale=major;
+      break;
+    case "D Minor":
+      root=2+octave*12;
+      selectedScale=minor;
+      break;
+    case "E Major":
+      root=4+octave*12;
+      selectedScale=major;
+      break;
+    case "E Minor":
+      root=4+octave*12;
+      selectedScale=minor;
+      break;
+    case "F Major":
+      root=5+octave*12;
+      selectedScale=major;
+      break;
+    case "F Minor":
+      root=5+octave*12;
+      selectedScale=minor;
+      break;
+    case "G Major":
+      root=7+octave*12;
+      selectedScale=major;
+      break;
+    case "G Minor":
+      root=7+octave*12;
+      selectedScale=minor;
+      break;
+    case "A Major":
+      root=9+octave*12;
+      selectedScale=major;
+      break;
+    case "A Minor":
+      root=9+octave*12;
+      selectedScale=minor;
+      break;
+    case "B Major":
+      root=11+octave*12;
+      selectedScale=major;
+      break;
+    case "B Minor":
+      root=11+octave*12;
+      selectedScale=minor;
+      break;                                   
     default:
       //
   }
@@ -265,13 +363,15 @@ function pressStartBtn() {
 }
 
 
-function drawPiano(selectedNotes) {
+function drawPiano(selectedNotes1,selectedNotes2) {
   fill(255);
   stroke(2);
 
   for (let ip=0; ip < 49; ip++) {
-    if (selectedNotes.includes(whitekeys[ip])) {
+    if (selectedNotes1.includes(whitekeys[ip])) {
       fill(palColors[2]);
+    } else if (selectedNotes2.includes(whitekeys[ip])) {
+        fill(palColors[4]);
     } else {
       fill(255);
     }
@@ -282,8 +382,10 @@ function drawPiano(selectedNotes) {
   for (let ip=0; ip < 48; ip++) {
     let n=(ip % 7);
     if ((n==0) || (n==1) || (n==3) || (n==4) || (n==5)) {
-      if (selectedNotes.includes(blackkeys[bcnt])) {
+      if (selectedNotes1.includes(blackkeys[bcnt])) {
         fill(palColors[2]);
+      } else if (selectedNotes2.includes(blackkeys[bcnt])) {
+        fill(palColors[4]);
       } else {
         fill(0);
       }      
@@ -312,11 +414,13 @@ function draw() {
     for (iy=0; iy < cellsHigh; iy++) {
       if (cells[ix][iy]==1) {
         fill(palColors[7]);
+      } else if (cells[ix][iy]==2) {
+        fill(palColors[6]);
       } else {
         fill(200);
       }
       rect(gridx+(ix*cellsize),gridy+(iy*cellsize),cellsize,cellsize);
     }
   }
-  drawPiano(notesDown);
+  drawPiano(notesDown,aNotesDown);
 }
