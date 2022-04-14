@@ -15,31 +15,57 @@ var cellsHigh=4;
 var cellsize=60;
 var cells=[];
 
+var totalBeats=0;
 
 // https://coolors.co/palette/001219-005f73-0a9396-94d2bd-e9d8a6-ee9b00-ca6702-bb3e03-ae2012-9b2226
 var palColors=["#001219","#005f73","#0a9396","#94d2bd","#e9d8a6","#ee9b00","#ca6702","#bb3e03","#ae2012","#9b2226"];
 
 
+var channel1,channel2;
 
 setupMidi(midiStarted);
 
 function midiStarted() {
-
+  var inMidiDevice=getMidiInputDevice("Key");
+  console.log("Found device:",inMidiDevice);
+  WebMidi.inputs[inMidiDevice].addListener("noteon", e => {
+    notePressed(e.data[1]);
+  });
+  WebMidi.inputs[inMidiDevice].addListener("noteoff", e => {
+    noteReleased(e.data[1]);
+  });
+  var midiOut = WebMidi.getOutputByName("IAC Driver Bus 1");
+  channel1 = midiOut.channels[1];
+  channel2 = midiOut.channels[2];
+  channel10 = midiOut.channels[10];
 }
 
-//Melody
-let ml = new Tone.Loop(melodyLoop, "4n");
-
-function melodyLoop(time) {
-
+var notesDown=[];
+function notePressed(m) {
+  notesDown.push(m);
+  let aNote=Utilities.buildNote(m);
+  channel1.sendNoteOn(aNote);
 }
+
+function noteReleased(m) {
+  let i = notesDown.indexOf(m);
+  notesDown.splice(i,1);
+  let aNote=Utilities.buildNote(m);
+  channel1.sendNoteOff(aNote);
+}
+
 
 let major = [0, 2, 4, 5, 7, 9, 11, 12];
 let notmajor = [1,3,6,8,10];
 let minor = [0, 2, 3, 5, 7, 9, 10, 12];
 
+let selectedScale=major;
+
 let whitekeys=[];
 let blackkeys=[];
+
+let accompany=[];
+let accompanyBeats=0;
 
 let root = 21; // lowest A in MIDI
 let octave = 3;
@@ -60,8 +86,122 @@ function mouseClicked() {
 
 }
 
+var bpmSlider;
+var accompanyInput;
+var lastAccompanyBeat=-1;
+var lastBpm;
+var millsPerBeat=0;
+var startBtn;
+var octaveSelect;
+
+const loopA = new Tone.Loop(runRhythm, "4n").start();
+
+var drums=[36,40,39,42];
+function runRhythm(time) {
+  let currentBeat=totalBeats % 8;
+  let accBeat=totalBeats % accompanyBeats;
+  if (accBeat != lastAccompanyBeat) {
+    let inx = accompany.indexOf(accBeat);
+    if (inx > -1) {
+      playAccompany(accompanyDurs[inx]);
+    }
+  }
+
+  let dt=time*1000-WebMidi.time;
+  //console.log(dt);
+
+  let dtstr="";
+  if (dt < 0) {
+    dt=0;
+  } 
+  dtstr="+"+String(dt);
+
+  if (cells[currentBeat][0]>0) {
+    let aNote=Utilities.buildNote(drums[0]);
+    channel10.playNote(aNote,{time: dtstr});
+  }
+  if (cells[currentBeat][1]>0) {
+    let aNote=Utilities.buildNote(drums[1]);
+    channel10.playNote(aNote,{time: dtstr});
+  }
+  if (cells[currentBeat][2]>0) {
+    let aNote=Utilities.buildNote(drums[2]);
+    channel10.playNote(aNote,{time: dtstr});
+  }
+  if (cells[currentBeat][3]>0) {
+    let aNote=Utilities.buildNote(drums[3]);
+    channel10.playNote(aNote,{time: dtstr});
+  }
+  totalBeats++;
+}
+
+let lastNote=200;
+function playAccompany(dur) {
+  // find lowest note
+  let lowNote=200;
+  for (let i=0; i < notesDown.length; i++) {
+    if ((notesDown[i]) < lowNote) {
+      lowNote=notesDown[i];
+    }
+  }
+  if (lowNote == 200) {
+    lowNote=lastNote;
+  }
+  if (lowNote != 200) {
+    console.log("Accompany "+String(lowNote)+" dur="+String(dur*millisPerBeat));
+    let aNote=Utilities.buildNote(lowNote)
+    channel2.playNote(aNote,{duration: dur*millisPerBeat})
+  }
+  lastNote=lowNote;
+}
+
 function setup() {
   createCanvas(sw, sh);
+  startBtn = createButton("Start");
+  startBtn.position(100,580);
+  startBtn.mousePressed(pressStartBtn);
+  bpmSlider = createSlider(30,300,60);
+  bpmSlider.position(gridx,60);
+
+  octaveSelect = createSelect();
+  octaveSelect.position(260,250);
+  octaveSelect.option('1');
+  octaveSelect.option('2');
+  octaveSelect.option('3');
+  octaveSelect.option('4');
+  octaveSelect.option('5');
+  octaveSelect.option('6');
+  octaveSelect.option('7');
+  octaveSelect.option('8');
+  octaveSelect.selected('3');
+  octaveSelect.changed(keyChanged);
+
+  keySelect = createSelect();
+  keySelect.position(100,250);
+  keySelect.option('C Major');
+  keySelect.option('C Minor');
+  keySelect.option('G Major');
+  keySelect.option('G Minor');
+  keySelect.option('D Major');
+  keySelect.option('D Minor');
+  keySelect.option('A Major');
+  keySelect.option('A Minor');
+  keySelect.option('E Major');
+  keySelect.option('E Minor');
+  keySelect.option('B Major');
+  keySelect.option('B Minor');
+  keySelect.option('F Major');
+  keySelect.option('F Minor');
+  keySelect.selected('C Major');
+  keySelect.changed(keyChanged);
+
+  text('Accompaniment Rhythm (i.e. 4 4 2 2)', 100, 160);
+  accompanyInput = createInput();
+  accompanyInput.position(100,200);
+  accompanyBtn = createButton("Change");
+  accompanyBtn.position(260,200);
+  accompanyBtn.mousePressed(changeAccompany);
+
   for (ix=0; ix < cellsWide; ix++) {
     cells[ix]=[];
     for (iy=0; iy < cellsHigh; iy++) {
@@ -77,6 +217,50 @@ function setup() {
     for (let i=0; i < 5; i++) {
       blackkeys.push(24+j*12+notmajor[i]);
     }
+  }
+}
+
+function keyChanged() {
+  let octave=int(octaveSelect.value());
+  switch (keySelect.value()) {
+    case "C Major":
+      root=octave*12;
+      selectedScale=major;
+      break;
+    case "C Minor":
+      root=octave*12;
+      selectedScale=minor;
+      break;
+    default:
+      //
+  }
+}
+
+function changeAccompany() {
+  var temp=accompanyInput.value();
+  temp=temp.trim()
+  var strArray=temp.split(" ");
+  accompany=[];
+  accompanyBeats=0;
+  accompanyDurs=[];
+  // We are going to save the starting beat for accompany changes
+  for (let i=0; i<strArray.length; i++) {
+    let n=int(strArray[i]);
+    if (Number.isInteger(n)) {
+      accompany.push(accompanyBeats);
+      accompanyDurs.push(n);
+      accompanyBeats+=n;
+    }
+  }
+  console.log(accompany);
+  console.log(accompanyBeats);
+}
+function pressStartBtn() {
+  startBtn.label="Stop";
+
+  if (!soundOn) {
+    Tone.Transport.start();
+    soundOn=true;
   }
 }
 
@@ -111,6 +295,17 @@ function drawPiano(selectedNotes) {
 
 function draw() {
   background(220);
+  textSize(14);
+  if (bpmSlider.value() != lastBpm) {
+    lastBpm=bpmSlider.value();
+    Tone.Transport.bpm.value=lastBpm;
+    millisPerBeat=(60000/lastBpm);
+  }
+  text('BPM '+String(bpmSlider.value()), gridx, 50);
+  text('Accompaniment Rhythm (i.e. 4 4 2 2)', 100, 185);
+  text('Octave:', 200, 264);
+
+
   fill(255);
   stroke(2);
   for (ix=0; ix < cellsWide; ix++) {
@@ -123,5 +318,5 @@ function draw() {
       rect(gridx+(ix*cellsize),gridy+(iy*cellsize),cellsize,cellsize);
     }
   }
-  drawPiano([]);
+  drawPiano(notesDown);
 }
