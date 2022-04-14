@@ -205,7 +205,8 @@ function playAccompany(dur) {
 }
 
 function setup() {
-  createCanvas(sw, sh);
+  var cv=createCanvas(sw, sh);
+  cv.position(0,0);
   startBtn = createButton("Start");
   startBtn.position(100,580);
   startBtn.mousePressed(pressStartBtn);
