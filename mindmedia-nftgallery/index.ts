@@ -314,7 +314,7 @@ function getNewCard() {
 function loadData() {
   let localurl="/raycasting-cards/src/assets.json"
   let neturl="https://testnets-api.opensea.io/api/v1/assets?offset=0&limit=200"
-  fetch(neturl).then(response => response.json()).then(data => {
+  fetch(localurl).then(response => response.json()).then(data => {
     //console.log(data);
     let i=0;
     let cnt=0;
