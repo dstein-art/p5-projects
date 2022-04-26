@@ -7,6 +7,10 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 
 let p5s=new Array();
 
+let checkBoxChecked=false;
+
+
+
 // CAMERA
 const camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 1, 150);
 camera.position.set(0, 20, 40);
@@ -51,7 +55,22 @@ controls.maxPolarAngle = 3*Math.PI/6
 controls.maxDistance = 40
 controls.minDistance = 2
 
+export function handleCheckbox(event){
+  console.log(event);
+  
+}
+
 export function animate() {
+  let lastCheck=checkBoxChecked;
+  var element = <HTMLInputElement> document.getElementById("checkbox");
+  if (element) {
+    checkBoxChecked=element.checked
+  }
+  if (lastCheck!=checkBoxChecked) {
+    loadData();
+  }
+
+
   dragObject();
   for (var i = 0; i < p5s.length; i++){
     p5s[i].needsUpdate = true;
@@ -80,18 +99,24 @@ var newcolor=80;
 
 const s = function( sketch ) {
 
-    let x = 100;
-    let y = 100;
+    let w = 200;
+    let h = 50;
     let p5_canvas;
+    let displayName=""
+    let displayUser=""
 
     sketch.setup = () => {
-      console.log("Setup");
-      p5_canvas=sketch.createCanvas(200, 200,p5.WEBGL);
+      p5_canvas=sketch.createCanvas(w, h,p5.WEBGL);
+      sketch.background(40);
       //p5_canvas.style('display', 'none');// hide this because I want to use in three.js
     };
 
+    sketch.setText= (aName,aUser) => {
+      displayName=aName;
+      displayUser=aUser;
+    }
+
     sketch.getP5Canvas = function(){
-      console.log("canvas");
       if (p5_canvas) {
           return p5_canvas.elt;
       } else {
@@ -100,10 +125,13 @@ const s = function( sketch ) {
     }
   
     sketch.draw = () => {
-      //console.log("draw");
-      sketch.background(200,0,100);
-      sketch.rect(x,y,50,50);
-      sketch.text("Hello World",40,20);
+      sketch.fill(50);
+      sketch.rect(0,0,w,h)
+      sketch.fill(200);
+      sketch.rect(2,2,w-4,h-4);
+      sketch.fill(0);
+      sketch.text(displayName,30,15);
+      sketch.text(displayUser,30,35);
     };
 };
 
@@ -122,56 +150,7 @@ function createFloor() {
   blockPlane.userData.ground = true
 }
 
-// box
-function createDeck() {
-  let scale = { x: 6, y: 2, z: 6 }
-  let pos = { x: 45, y: scale.y / 2, z: 15 }
 
-  let deckTexture = new THREE.TextureLoader().load("deck.jpg");
-  //let backMaterial = new THREE.MeshBasicMaterial({ map: panotexture });
-
-  let box = new THREE.Mesh(new THREE.BoxBufferGeometry(), 
-      new THREE.MeshPhongMaterial({ map: deckTexture }));
-  box.position.set(pos.x, pos.y, pos.z);
-  box.scale.set(scale.x, scale.y, scale.z);
-  box.castShadow = true;
-  box.receiveShadow = true;
-  scene.add(box)
-
-  box.userData.draggable = false
-  box.userData.name = 'DECK'
-}
-
-function createSphere() {
-  let radius = 4;
-  let pos = { x: 15, y: radius, z: -15 };
-
-  let sphere = new THREE.Mesh(new THREE.SphereBufferGeometry(radius, 32, 32), 
-      new THREE.MeshPhongMaterial({ color: 0x43a1f4 }))
-  sphere.position.set(pos.x, pos.y, pos.z)
-  sphere.castShadow = true
-  sphere.receiveShadow = true
-  scene.add(sphere)
-
-  sphere.userData.draggable = false
-  sphere.userData.name = 'SPHERE'
-}
-
-function createCylinder() {
-  let radius = 4;
-  let height = 6
-  let pos = { x: -15, y: height / 2, z: 15 };
-
-  // threejs
-  let cylinder = new THREE.Mesh(new THREE.CylinderBufferGeometry(radius, radius, height, 32), new THREE.MeshPhongMaterial({ color: 0x90ee90 }))
-  cylinder.position.set(pos.x, pos.y, pos.z)
-  cylinder.castShadow = true
-  cylinder.receiveShadow = true
-  scene.add(cylinder)
-
-  cylinder.userData.draggable = false
-  cylinder.userData.name = 'CYLINDER'
-}
 
 let panelLayout= [
   { x: -34, y: 10, z: -50, rx:Math.PI/2,ry:0,rz:0 },
@@ -210,12 +189,13 @@ function createPanel(i,imgUrl) {
 }
     
 
-function createP5TextPanel(aText) {
-  let scale = { x: 20, y: 0.25, z: 20 }
-  let pos = { x: i*7, y: 10, z: -50 }
+function createP5TextPanel(cnt,aName,aUser) {
+  let scale = { x: 20, y: 0.25, z: 5 }
+  let pos = panelLayout[cnt]
 
   let sketchInstance = new p5(s);
   sketchInstance.setup();
+  sketchInstance.setText(aName,aUser);
   let p5c=sketchInstance.getP5Canvas();
   console.log(p5c);
   let p5Texture = new THREE.Texture(p5c); 
@@ -223,10 +203,10 @@ function createP5TextPanel(aText) {
 
   let box = new THREE.Mesh(new THREE.BoxBufferGeometry(), p5Material);
     //  new THREE.MeshPhongMaterial({ color: 0x33FFFF }));
-  box.position.set(pos.x, pos.y, pos.z);
+  box.position.set(pos.x, pos.y-13, pos.z);
 
   box.scale.set(scale.x, scale.y, scale.z);
-  box.rotation.set(Math.PI/2,0,0);
+  box.rotation.set(pos.rx,pos.ry,pos.rz);
   box.castShadow = false;
   box.receiveShadow = false;
 
@@ -314,7 +294,16 @@ function getNewCard() {
 function loadData() {
   let localurl="/raycasting-cards/src/assets.json"
   let neturl="https://testnets-api.opensea.io/api/v1/assets?offset=0&limit=200"
-  fetch(localurl).then(response => response.json()).then(data => {
+  let aUrl=localurl;
+
+  var element = <HTMLInputElement> document.getElementById("checkbox");
+  if (element) {
+    if (element.checked) {
+      aUrl=neturl;
+    }
+  }
+
+  fetch(aUrl).then(response => response.json()).then(data => {
     //console.log(data);
     let i=0;
     let cnt=0;
@@ -322,17 +311,36 @@ function loadData() {
     console.log("max"+max);
     let lasturl="";
     while ((cnt < 16) && (i < max)) {
-      console.log(data.assets[i].image_preview_url);
+      let aName=""
+      let aUser=""
       if (data.assets[i].image_preview_url!=null) {
         if (lasturl!=data.assets[i].image_preview_url) {
           lasturl=data.assets[i].image_preview_url;
+          if (data.assets[i].name) {
+            aName=data.assets[i].name
+          }
+          if (data.assets[i].user) {
+            if (data.assets[i].user.username) {
+              aUser=data.assets[i].user.username
+            }
+          }
           createPanel(cnt,lasturl);
+          createP5TextPanel(cnt,aName,aUser);
           cnt++;
         }
       } else if (data.assets[i].image_url!=null) {
-        if (lasturl!=data.assets[i].image_preview) {
+        if (lasturl!=data.assets[i].image_url) {
           lasturl=data.assets[i].image_url;
+          if (data.assets[i].name) {
+            aName=data.assets[i].name
+          }
+          if (data.assets[i].user) {
+            if (data.assets[i].user.username) {
+              aUser=data.assets[i].user.username
+            }
+          }
           createPanel(cnt,lasturl);
+          createP5TextPanel(cnt,aName,aUser);
           cnt++;        
         }
       }
@@ -342,11 +350,7 @@ function loadData() {
 }
 
 createFloor()
-//createDeck()
-//createSphere()
-//createCylinder()
-//createCard(1,1)
-//createCard(1,7)
 loadData();
+//createP5TextPanel(0,"Hey There","test");
 
 animate()
