@@ -292,7 +292,7 @@ function getNewCard() {
 
 //let loader;
 function loadData() {
-  let localurl="/raycasting-cards/src/assets.json"
+  let localurl="assets.json"
   let neturl="https://testnets-api.opensea.io/api/v1/assets?offset=0&limit=200"
   let aUrl=localurl;
 
