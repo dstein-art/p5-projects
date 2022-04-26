@@ -43,6 +43,23 @@ function midiStarted() {
 var notesDown=[];
 var aNotesDown=[];
 
+
+let chain = new Markov(
+  {
+  	"0" : [{"value":"0", "probability":0.5}, {"value":"2", "probability": 0.25}, {"value":"4", "probability": 0.25}],
+    "1" : [{"value":"0", "probability":0.6}, {"value":"4", "probability": 0.4}],
+  	"2" : [{"value":"4", "probability":0.3}, {"value":"2", "probability": 0.2}, {"value":"4", "probability": 0.5}], 
+    "3" : [{"value":"0", "probability":0.5}, {"value":"4", "probability": 0.4}, {"value":"5", "probability": 0.4}],
+    "4" : [{"value":"0", "probability":0.2}, {"value":"2", "probability": 0.3}, {"value":"4", "probability": 0.4},{"value":"1", "probability": 0.1}],
+    "5" : [{"value":"0", "probability":0.6}, {"value":"4", "probability": 0.4}],
+    "6" : [{"value":"0", "probability":0.6}, {"value":"4", "probability": 0.4}],
+  	"7" : [{"value":"0", "probability":0.5}, {"value":"2", "probability": 0.25}, {"value":"4", "probability": 0.25}]
+  }
+);
+
+
+
+
 function  getNoteInScale(m) {
   var noteInScale=-1;
   let temp=m%12;
@@ -185,17 +202,65 @@ function playAccompany(dur) {
     let nIndex=getNoteInScale(lowNote);
     aNotesDown=[];
     if (nIndex != -1) {
-      console.log(lowNote);
-      console.log(nIndex);
-      console.log(root);
-      console.log(selectedScale);
+
+      chain.value = nIndex;
+      let amNote=chain.next();
+
+      let dur3=(millisPerBeat*dur/3)-33;
+      let start2=millisPerBeat*dur3;
+      let start3=millisPerBeat*dur3*2;
+
+      console.log("NOTE TO BUILD:",(root+selectedScale[amNote]));
+      let aNote=Utilities.buildNote(root+selectedScale[amNote]);
+      aNotesDown.push(root+selectedScale[amNote]);
+      channel2.playNote(aNote,{duration: dur3});
+
+      amNote=chain.next();
+
+      aNote=Utilities.buildNote(root+selectedScale[amNote]);
+      aNotesDown.push(root+selectedScale[amNote]);
+      channel2.playNote(aNote,{time: start2, duration: dur3});
+
+
+      amNote=chain.next();
+
+      aNote=Utilities.buildNote(root+selectedScale[amNote]);
+      aNotesDown.push(root+selectedScale[amNote]);
+      channel2.playNote(aNote,{time: start3, duration: dur3})
+    }
+  }
+  lastNote=lowNote;
+}
+
+function oldPlayAccompany(dur) {
+  // find lowest note
+  let lowNote=200;
+  for (let i=0; i < notesDown.length; i++) {
+    if ((notesDown[i]) < lowNote) {
+      lowNote=notesDown[i];
+    }
+  }
+  if (lowNote == 200) {
+    lowNote=lastNote;
+  }
+  if (lowNote != 200) {
+    console.log("Accompany "+String(lowNote)+" dur="+String(dur*millisPerBeat));
+    let nIndex=getNoteInScale(lowNote);
+    aNotesDown=[];
+    if (nIndex != -1) {
+
+
       console.log("NOTE TO BUILD:",(root+selectedScale[nIndex]));
       let aNote=Utilities.buildNote(root+selectedScale[nIndex]);
       aNotesDown.push(root+selectedScale[nIndex]);
       channel2.playNote(aNote,{duration: dur*millisPerBeat-100});
+
+
       aNote=Utilities.buildNote(root+selectedScale[(nIndex+2)%7]);
-      aNotesDown.push(root+selectedScale[(nIndex+2)%7]);
-      channel2.playNote(aNote,{duration: dur*millisPerBeat-100});
+      aNotesDown.push(root+selectedScale[(nIndex+2)%7]);   
+      channel2.playNote(aNote,{ duration: dur*millisPerBeat-100});
+
+
       aNote=Utilities.buildNote(root+selectedScale[(nIndex+4)%7]);
       aNotesDown.push(root+selectedScale[(nIndex+4)%7]);
       channel2.playNote(aNote,{duration: dur*millisPerBeat-100})
@@ -204,7 +269,11 @@ function playAccompany(dur) {
   lastNote=lowNote;
 }
 
+
 function setup() {
+
+  
+
   var cv=createCanvas(sw, sh);
   cv.position(0,0);
   startBtn = createButton("Start");
