@@ -9,8 +9,6 @@ let p5s=new Array();
 
 let checkBoxChecked=false;
 
-
-
 // CAMERA
 const camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 1, 150);
 camera.position.set(0, 20, 40);
@@ -55,11 +53,6 @@ controls.maxPolarAngle = 3*Math.PI/6
 controls.maxDistance = 40
 controls.minDistance = 2
 
-export function handleCheckbox(event){
-  console.log(event);
-  
-}
-
 export function animate() {
   let lastCheck=checkBoxChecked;
   var element = <HTMLInputElement> document.getElementById("checkbox");
@@ -69,7 +62,6 @@ export function animate() {
   if (lastCheck!=checkBoxChecked) {
     loadData();
   }
-
 
   dragObject();
   for (var i = 0; i < p5s.length; i++){
@@ -261,7 +253,7 @@ window.addEventListener('click', event => {
       draggable = found[0].object
       console.log(`found draggable ${draggable.userData.name}`)
     } else if (found[0].object.userData.name == "DECK") {
-      getNewCard();
+      //getNewCard();
     }
   }
 })
@@ -287,8 +279,6 @@ function dragObject() {
   }
 }
 
-function getNewCard() {
-}
 
 //let loader;
 function loadData() {
@@ -351,6 +341,5 @@ function loadData() {
 
 createFloor()
 loadData();
-//createP5TextPanel(0,"Hey There","test");
 
 animate()
