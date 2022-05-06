@@ -189,7 +189,6 @@ function createP5TextPanel(cnt,aName,aUser) {
   sketchInstance.setup();
   sketchInstance.setText(aName,aUser);
   let p5c=sketchInstance.getP5Canvas();
-  console.log(p5c);
   let p5Texture = new THREE.Texture(p5c); 
   let p5Material= new THREE.MeshBasicMaterial({ map: p5Texture, transparent: false, opacity: 0, side: THREE.DoubleSide });
 
