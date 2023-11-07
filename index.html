@@ -1,79 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bootstrap Site</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
-  <link rel="stylesheet" type="text/css" href="style.css">  
-</head>
-<body>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>instructor.cc - David Stein</title>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Bootstrap icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
 
-<div class="container">
-  <div class="row"><div class="col" align="center"><h1>P5 Projects by David Stein</h1></div></div>
-  <div class="row">
-    <div class="col">
-      <div class="card" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title">Wavetable Synth</h5>
-          <p class="card-text">Code of Music project to build a Wavetable Synth using P5 and Tone.JS</p>
-          <a href="wavetablesynth/index.html" class="btn btn-primary">Go</a>
+        <!-- Responsive navbar-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container px-lg-5">
+              <a class="navbar-brand" href="#!">p5 Projects - David Stein</a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                  <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                      <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">Home</a></li>
+                      <li class="nav-item"><a class="nav-link" href="http://www.davidstein.us/portfolio/index.html">Portfolio</a></li>
+                      <li class="nav-item"><a class="nav-link" href="http://www.instructor.cc">Instructor.cc</a></li>
+                      <li class="nav-item"><a class="nav-link" href="https://colonelpanix.notion.site/Contact-5504eb8ac3064bc8902651ff8bfacef4">Contact</a></li>
+                  </ul>
+              </div>
+          </div>
+      </nav>
+
+<header class="py">
+    <div class="container px-lg-5">
+        <div class="p-4 p-lg-5 bg-light rounded-3 text-center">
+            <div class="m-4 m-lg-3">
+                <h1 class="display-5 fw-bold">P5 Projects</h1>
+                <p class="fs-4">by David Stein</p>
+            </div>
         </div>
-      </div>      
     </div>
-    <div class="col">
-      <div class="card" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title">Music Mouse</h5>
-          <p class="card-text">Code of Music project to build a partial clone of the emulation by Tero Parviainen of Laurie Spiegels "Music Mouse - An Intelligent Instrument</p>
-          <a href="codeofmusic-mouse/index.html" class="btn btn-primary">Go</a>
+</header>      
+<section class="pt-4">
+  <div class="container px-lg-5">
+    <div class="row gx-lg-5">    
+      <div class="col-lg-6 col-xxl-4 mb-5">
+        <div class="card bg-light border-0 h-100">
+          <div class="card-body">
+            <h5 class="card-title">Wavetable Synth</h5>
+            <p class="card-text">Code of Music project to build a Wavetable Synth using P5 and Tone.JS</p>
+            <a href="wavetablesynth/index.html" class="btn btn-primary">Go</a>
+          </div>
+        </div>      
+      </div>
+      <div class="col-lg-6 col-xxl-4 mb-5">
+        <div class="card bg-light border-0 h-100">
+          <div class="card-body">
+            <h5 class="card-title">Music Mouse</h5>
+            <p class="card-text">Code of Music project to build a partial clone of the emulation by Tero Parviainen of Laurie Spiegels "Music Mouse - An Intelligent Instrument</p>
+            <a href="codeofmusic-mouse/index.html" class="btn btn-primary">Go</a>
+          </div>
+        </div>      
+      </div>
+      <div class="col-lg-6 col-xxl-4 mb-5">
+        <div class="card bg-light border-0 h-100">
+          <div class="card-body">
+            <h5 class="card-title">Music Drone</h5>
+            <p class="card-text">Code of Music work in progress to allow a DJ Hero 3 controller to control a drone sound</p>
+            <a href="codeofmusic-drone/index.html" class="btn btn-primary">Go</a>
+          </div>
+        </div>         
+      </div>
+      <div class="col-lg-6 col-xxl-4 mb-5">
+        <div class="card bg-light border-0 h-100">
+          <div class="card-body">
+            <h5 class="card-title">Harmony Machine</h5>
+            <p class="card-text">P5 script that works with a Midi Keyboard Controller and Ableton</p>
+            <a href="harmonymachine/index.html" class="btn btn-primary">Go</a>
+          </div>
         </div>
-      </div>      
-    </div>
-    <div class="col">
-      <div class="card" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title">Music Drone</h5>
-          <p class="card-text">Code of Music work in progress to allow a DJ Hero 3 controller to control a drone sound</p>
-          <a href="codeofmusic-drone/index.html" class="btn btn-primary">Go</a>
+      </div>
+      <div class="col-lg-6 col-xxl-4 mb-5">
+        <div class="card bg-light border-0 h-100">
+          <div class="card-body">
+            <h5 class="card-title">Avatar Dating</h5>
+            <p class="card-text">A prototype of a dating app that has no real people (people come from a GAN @ runwayML)</p>
+            <a href="mindmedia-dating/index.html" class="btn btn-primary">Go</a>
+          </div>
         </div>
-      </div>         
-    </div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <div class="card" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title">Harmony Machine</h5>
-          <p class="card-text">P5 script that works with a Midi Keyboard Controller and Ableton</p>
-          <a href="harmonymachine/index.html" class="btn btn-primary">Go</a>
+      </div>
+      <div class="col-lg-6 col-xxl-4 mb-5">
+        <div class="card bg-light border-0 h-100">
+          <div class="card-body">
+            <h5 class="card-title">NFT Gallery</h5>
+            <p class="card-text">An NFT Art Gallery created with Three.JS</p>
+            <a href="http://www.davidstein.us/nftgallery/" class="btn btn-primary">Go</a>
+            <a href="https://github.com/dstein-art/p5-projects/tree/main/mindmedia-nftgallery" class="btn btn-primary">Code</a>
+          </div>
         </div>
       </div>
     </div>
-    <div class="col">
-      <div class="card" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title">Avatar Dating</h5>
-          <p class="card-text">A prototype of a dating app that has no real people (people come from a GAN @ runwayML)</p>
-          <a href="mindmedia-dating/index.html" class="btn btn-primary">Go</a>
-        </div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="card" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title">NFT Gallery</h5>
-          <p class="card-text">An NFT Art Gallery created with Three.JS</p>
-          <a href="http://www.davidstein.us/nftgallery/" class="btn btn-primary">Go</a>
-          <a href="https://github.com/dstein-art/p5-projects/tree/main/mindmedia-nftgallery" class="btn btn-primary">Code</a>
-        </div>
-      </div>
-    </div>    
+
+
 
   </div>
-</div>
+</section>
 
 
 
